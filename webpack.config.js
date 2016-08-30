@@ -6,12 +6,11 @@ var LiveReloadPlugin = require('webpack-livereload-plugin');
 module.exports = {
   entry: [
     'babel-polyfill',
-    './src/components/index',
+    './src/public/components/index',
   ],
   output: {
-      filename: 'public/app.js'
+    filename: 'src/public/bundle.js'
   },
-  //devtool: 'source-map',
 
   plugins: [
     new LiveReloadPlugin
