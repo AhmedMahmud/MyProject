@@ -1,5 +1,4 @@
 import React from 'react';
-import FileInput from 'react-file-input';
 
 export default class SignupFrom extends React.Component {
 	render() {
