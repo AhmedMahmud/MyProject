@@ -29396,6 +29396,10 @@
 
 	var _ProductDetails2 = _interopRequireDefault(_ProductDetails);
 
+	var _CreatePost = __webpack_require__(475);
+
+	var _CreatePost2 = _interopRequireDefault(_CreatePost);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29413,7 +29417,8 @@
 			var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
 			_this.state = {
-				currentUser: {}
+				currentUser: {},
+				currentAds: []
 			};
 			return _this;
 		}
@@ -29421,6 +29426,46 @@
 		_createClass(App, [{
 			key: 'render',
 			value: function render() {
+				var buttons = void 0;
+				if (this.state.currentUser.id) {
+					buttons = _react2.default.createElement(
+						'ul',
+						{ className: 'nav navbar-nav pull-right' },
+						_react2.default.createElement(
+							'li',
+							{ className: 'nav-item' },
+							_react2.default.createElement(
+								'button',
+								{ className: 'btn-flat waves-effect waves-light', 'data-toggle': 'modal', 'data-target': '#modal-createPost' },
+								'Create Advertisment'
+							)
+						)
+					);
+				} else {
+					buttons = _react2.default.createElement(
+						'ul',
+						{ className: 'nav navbar-nav pull-right' },
+						_react2.default.createElement(
+							'li',
+							{ className: 'nav-item' },
+							_react2.default.createElement(
+								'button',
+								{ className: 'btn-flat waves-effect waves-light', 'data-toggle': 'modal', 'data-target': '#modal-login' },
+								'Sign In'
+							)
+						),
+						_react2.default.createElement(
+							'li',
+							{ className: 'nav-item' },
+							_react2.default.createElement(
+								'button',
+								{ className: 'btn-flat waves-effect waves-light', 'data-toggle': 'modal', 'data-target': '#modal-register' },
+								'Sign Up'
+							)
+						)
+					);
+				}
+
 				return _react2.default.createElement(
 					'div',
 					null,
@@ -29435,33 +29480,7 @@
 						_react2.default.createElement(
 							'ul',
 							{ className: 'nav navbar-nav pull-right' },
-							_react2.default.createElement(
-								'li',
-								{ className: 'nav-item' },
-								_react2.default.createElement(
-									'button',
-									{ className: 'btn-flat waves-effect waves-light', href: '#' },
-									'Home'
-								)
-							),
-							_react2.default.createElement(
-								'li',
-								{ className: 'nav-item' },
-								_react2.default.createElement(
-									'button',
-									{ className: 'btn-flat waves-effect waves-light', 'data-toggle': 'modal', 'data-target': '#modal-login' },
-									'Sign In'
-								)
-							),
-							_react2.default.createElement(
-								'li',
-								{ className: 'nav-item' },
-								_react2.default.createElement(
-									'button',
-									{ className: 'btn-flat waves-effect waves-light', 'data-toggle': 'modal', 'data-target': '#modal-register' },
-									'Sign Up'
-								)
-							)
+							buttons
 						)
 					),
 					_react2.default.createElement(
@@ -29482,11 +29501,11 @@
 							)
 						),
 						_react2.default.createElement('hr', { style: { marginLeft: "20px", marginRight: "20px" } }),
-						_react2.default.createElement(_AdList2.default, { ads: data })
+						_react2.default.createElement(_AdList2.default, { ads: this.state.currentAds })
 					),
 					_react2.default.createElement(_SignupForm2.default, { handler: this.signup.bind(this) }),
 					_react2.default.createElement(_SigninForm2.default, { handler: this.login.bind(this) }),
-					_react2.default.createElement(_ProductDetails2.default, null)
+					_react2.default.createElement(_CreatePost2.default, { handler: this.createPost.bind(this) })
 				);
 			}
 		}, {
@@ -29497,13 +29516,14 @@
 					type: 'POST',
 					data: JSON.stringify({ username: username, password: password }),
 					contentType: 'application/json',
-					success: function success(result) {
+					success: function (result) {
 						if (result.length) {
 							this.setState({
 								currentUser: result[0]
 							});
+							console.log(this.state.currentUser);
 						}
-					},
+					}.bind(this),
 					error: function error(err) {
 						console.log('Error getting results ' + err);
 					}
@@ -29524,6 +29544,48 @@
 						console.log('Error getting results ' + err);
 					}
 				});
+			}
+		}, {
+			key: 'createPost',
+			value: function createPost(title, description, price, model, engineSize, color, year, mileage) {
+				$.ajax({
+					url: '/api/advertisments',
+					type: 'POST',
+					data: JSON.stringify({ title: title, description: description, model: model, engine_size: engineSize, color: color, price: price, year: year, mileage: mileage, user_id: this.state.currentUser.id }),
+					contentType: 'application/json',
+					success: function success(result) {
+						console.log(result);
+					},
+					error: function error(err) {
+						console.log('Error: ' + err);
+					}
+				});
+			}
+		}, {
+			key: 'updateAdvertisments',
+			value: function updateAdvertisments() {
+				$.ajax({
+					url: '/api/advertisments',
+					type: 'GET',
+					success: function (results) {
+						this.setState({
+							currentAds: results
+						});
+					}.bind(this),
+					error: function error(err) {
+						console.log('Error: ' + err);
+					}
+				});
+			}
+		}, {
+			key: 'componentWillMount',
+			value: function componentWillMount() {
+				this.updateAdvertisments();
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				setInterval(this.updateAdvertisments.bind(this), 1000);
 			}
 		}]);
 
@@ -29641,7 +29703,7 @@
 	          _react2.default.createElement(
 	            "div",
 	            { className: "view overlay hm-white-slight z-depth-1" },
-	            _react2.default.createElement("img", { src: "http://mdbootstrap.com/images/ecommerce/reg/reg%20%283%29.jpg", className: "img-fluid", alt: "" }),
+	            _react2.default.createElement("img", { src: "http://hypercarz.com/img/McLaren%20P1%2001.jpg", className: "img-fluid", alt: "" }),
 	            _react2.default.createElement(
 	              "a",
 	              null,
@@ -29651,11 +29713,6 @@
 	          _react2.default.createElement(
 	            "div",
 	            { className: "card-block text-xs-center" },
-	            _react2.default.createElement(
-	              "h5",
-	              null,
-	              "Category"
-	            ),
 	            _react2.default.createElement(
 	              "h4",
 	              { className: "card-title" },
@@ -29675,11 +29732,48 @@
 	              this.props.ad.description
 	            ),
 	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Make: ",
+	              this.props.ad.make
+	            ),
+	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Model: ",
+	              this.props.ad.model
+	            ),
+	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Year: ",
+	              this.props.ad.year
+	            ),
+	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Color: ",
+	              this.props.ad.color
+	            ),
+	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Engine Size: ",
+	              this.props.ad.engineSize
+	            ),
+	            _react2.default.createElement(
+	              "h5",
+	              { className: "card-text" },
+	              "Mileage: ",
+	              this.props.ad.mileage
+	            ),
+	            _react2.default.createElement(
 	              "div",
 	              { className: "card-footer" },
 	              _react2.default.createElement(
 	                "span",
 	                { className: "left" },
+	                "$",
 	                this.props.ad.price
 	              ),
 	              _react2.default.createElement(
@@ -29775,7 +29869,7 @@
 	              _react2.default.createElement(
 	                "div",
 	                { className: "md-form" },
-	                _react2.default.createElement("i", { className: "fa fa-envelope prefix" }),
+	                _react2.default.createElement("i", { className: "fa fa-user prefix" }),
 	                _react2.default.createElement("input", { type: "text", id: "username", className: "form-control", ref: function ref(input) {
 	                    return _this2.username = input;
 	                  } }),
@@ -29788,7 +29882,7 @@
 	              _react2.default.createElement(
 	                "div",
 	                { className: "md-form" },
-	                _react2.default.createElement("i", { className: "fa fa-envelope prefix" }),
+	                _react2.default.createElement("i", { className: "fa fa-lock prefix" }),
 	                _react2.default.createElement("input", { type: "password", id: "password", className: "form-control", ref: function ref(input) {
 	                    return _this2.password = input;
 	                  } }),
@@ -29801,7 +29895,7 @@
 	              _react2.default.createElement(
 	                "div",
 	                { className: "md-form" },
-	                _react2.default.createElement("i", { className: "fa fa-lock prefix" }),
+	                _react2.default.createElement("i", { className: "fa fa-user prefix" }),
 	                _react2.default.createElement("input", { type: "text", id: "name", className: "form-control", ref: function ref(input) {
 	                    return _this2.fullName = input;
 	                  } }),
@@ -29814,7 +29908,7 @@
 	              _react2.default.createElement(
 	                "div",
 	                { className: "md-form" },
-	                _react2.default.createElement("i", { className: "fa fa-lock prefix" }),
+	                _react2.default.createElement("i", { className: "fa fa-envelope prefix" }),
 	                _react2.default.createElement("input", { type: "email", id: "email", className: "form-control", ref: function ref(input) {
 	                    return _this2.email = input;
 	                  } }),
@@ -29827,8 +29921,8 @@
 	              _react2.default.createElement(
 	                "div",
 	                { className: "md-form" },
-	                _react2.default.createElement("i", { className: "fa fa-lock prefix" }),
-	                _react2.default.createElement("input", { type: "phone", id: "phone", className: "form-control", ref: function ref(input) {
+	                _react2.default.createElement("i", { className: "fa fa-phone prefix" }),
+	                _react2.default.createElement("input", { type: "text", id: "phone", className: "form-control", ref: function ref(input) {
 	                    return _this2.phoneNumber = input;
 	                  } }),
 	                _react2.default.createElement(
@@ -30153,6 +30247,301 @@
 	}(_react2.default.Component);
 
 	exports.default = ProductDetails;
+
+/***/ },
+/* 475 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(299);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactFileInput = __webpack_require__(476);
+
+	var _reactFileInput2 = _interopRequireDefault(_reactFileInput);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SignupFrom = function (_React$Component) {
+	  _inherits(SignupFrom, _React$Component);
+
+	  function SignupFrom() {
+	    _classCallCheck(this, SignupFrom);
+
+	    return _possibleConstructorReturn(this, (SignupFrom.__proto__ || Object.getPrototypeOf(SignupFrom)).apply(this, arguments));
+	  }
+
+	  _createClass(SignupFrom, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'modal fade modal-ext', id: 'modal-createPost', tabindex: '-1', role: 'dialog', 'aria-labelledby': 'myModalLabel', 'aria-hidden': 'true' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'modal-dialog', role: 'document' },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'modal-content' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-header' },
+	              _react2.default.createElement(
+	                'button',
+	                { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close' },
+	                _react2.default.createElement(
+	                  'span',
+	                  { 'aria-hidden': 'true' },
+	                  '×'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'h3',
+	                null,
+	                'Create Post'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-body' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-header prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.title = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form2' },
+	                  'Title'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-pencil prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.description = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Description'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-usd prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.price = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Price'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-car prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.model = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Model'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-wrench prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.engineSize = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Engine Size'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-paint-brush prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.color = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Color'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-calendar prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.year = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Year'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-history prefix' }),
+	                _react2.default.createElement('input', { type: 'text', className: 'form-control', ref: function ref(input) {
+	                    return _this2.mileage = input;
+	                  } }),
+	                _react2.default.createElement(
+	                  'label',
+	                  { 'for': 'form3' },
+	                  'Mileage'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'md-form' },
+	                _react2.default.createElement('i', { className: 'fa fa-image prefix' }),
+	                _react2.default.createElement('input', { type: 'file' })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'text-xs-center' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { className: 'btn btn-primary btn-lg', onClick: function () {
+	                      this.props.handler(this.title.value, this.description.value, this.price.value, this.model.value, this.engineSize.value, this.color.value, this.year.value, this.mileage.value);
+	                    }.bind(this) },
+	                  'Create Advertisment'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              _react2.default.createElement(
+	                'button',
+	                { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+	                'Close'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }, {
+	    key: 'handleChange',
+	    value: function handleChange(event) {
+	      console.log('Selected file:', event.target.files[0]);
+	      fs.writeFileSync(__dirname + event.target.files[0].name, event.target.files[0]);
+	    }
+	  }]);
+
+	  return SignupFrom;
+	}(_react2.default.Component);
+
+	/*this.props.handler(document.getElementById('form1'), document.getElementById('form2'), document.getElementById('form3'))*/
+
+
+	exports.default = SignupFrom;
+	/* WEBPACK VAR INJECTION */}.call(exports, "/"))
+
+/***/ },
+/* 476 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(299);
+
+	var FileInput = React.createClass({
+	  getInitialState: function() {
+	    return {
+	      value: '',
+	      styles: {
+	        parent: {
+	          position: 'relative'
+	        },
+	        file: {
+	          position: 'absolute',
+	          top: 0,
+	          left: 0,
+	          opacity: 0,
+	          width: '100%',
+	          zIndex: 1
+	        },
+	        text: {
+	          position: 'relative',
+	          zIndex: -1
+	        }
+	      }
+	    };
+	  },
+
+	  handleChange: function(e) {
+	    this.setState({
+	      value: e.target.value.split(/(\\|\/)/g).pop()
+	    });
+	    if (this.props.onChange) this.props.onChange(e);
+	  },
+
+	  render: function() {
+	    return React.DOM.div({
+	        style: this.state.styles.parent
+	      },
+
+	      // Actual file input
+	      React.DOM.input({
+	        type: 'file',
+	        name: this.props.name,
+	        className: this.props.className,
+	        onChange: this.handleChange,
+	        disabled: this.props.disabled,
+	        accept: this.props.accept,
+	        style: this.state.styles.file
+	      }),
+
+	      // Emulated file input
+	      React.DOM.input({
+	        type: 'text',
+	        tabIndex: -1,
+	        name: this.props.name + '_filename',
+	        value: this.state.value,
+	        className: this.props.className,
+	        onChange: function() {},
+	        placeholder: this.props.placeholder,
+	        disabled: this.props.disabled,
+	        style: this.state.styles.text
+	      }));
+	  }
+	});
+
+	module.exports = FileInput;
+
 
 /***/ }
 /******/ ]);

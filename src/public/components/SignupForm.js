@@ -14,28 +14,28 @@ export default class LoginForm extends React.Component {
             </div>
             <div className="modal-body">
               <div className="md-form">
-                <i className="fa fa-envelope prefix"></i>
+                <i className="fa fa-user prefix"></i>
                 <input type="text" id="username" className="form-control" ref={(input) => this.username = input} />
                 <label for="username">Username</label>
               </div>
               <div className="md-form">
-                <i className="fa fa-envelope prefix"></i>
+                <i className="fa fa-lock prefix"></i>
                 <input type="password" id="password" className="form-control" ref={(input) => this.password = input} />
                 <label for="password">Password</label>
               </div>
               <div className="md-form">
-                <i className="fa fa-lock prefix"></i>
+                <i className="fa fa-user prefix"></i>
                 <input type="text" id="name" className="form-control" ref={(input) => this.fullName = input} />
                 <label for="name">Full Name</label>
               </div>
               <div className="md-form">
-                <i className="fa fa-lock prefix"></i>
+                <i className="fa fa-envelope prefix"></i>
                 <input type="email" id="email" className="form-control" ref={(input) => this.email = input} />
                 <label for="email">Email</label>
               </div>
               <div className="md-form">
-                <i className="fa fa-lock prefix"></i>
-                <input type="phone" id="phone" className="form-control" ref={(input) => this.phoneNumber = input} />
+                <i className="fa fa-phone prefix"></i>
+                <input type="text" id="phone" className="form-control" ref={(input) => this.phoneNumber = input} />
                 <label for="phone">Phone Number</label>
               </div>
               <div className="text-xs-center">

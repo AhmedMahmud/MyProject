@@ -65,7 +65,6 @@ app.post('/api/advertisments', function(req, res) {
 	var results = [
 		data.title,
 		data.description,
-		data.make,
 		data.model,
 		data.engine_size,
 		data.color,
@@ -75,9 +74,9 @@ app.post('/api/advertisments', function(req, res) {
 		data.user_id
 	];
 
-	db.query('INSERT INTO Advertisments (title, description, make, model, engine_size, color, price, year, mileage, user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', results, function(err, result) {
+	db.query('INSERT INTO Advertisments (title, description, model, engine_size, color, price, year, mileage, user_id) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', results, function(err, result) {
 		if (err) {
-			res.send('Failed1 to create adbertisment' + err);
+			res.send('Failed to create advertisment' + err);
 			return;
 		}
 		res.json(result);
